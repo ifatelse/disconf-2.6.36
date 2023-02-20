@@ -2,7 +2,9 @@ package com.baidu.disconf.client.watch.inner;
 
 
 import com.baidu.disconf.client.common.model.DisConfCommonModel;
+import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.client.config.DisClientSysConfig;
+import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
@@ -25,17 +27,18 @@ import java.util.concurrent.TimeUnit;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2022 All Rights Reserved
  **/
-public class LeconfContextRefresher implements ApplicationListener<ContextRefreshedEvent> {
+public class DisconfContextRefresher implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(LeconfContextRefresher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DisconfContextRefresher.class);
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), DisconfThreadFactory.create("RemoteConfigLongPollService", true));
 
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        for (Map.Entry<String, RemoteConfigRepository> repositoryEntry : DisConfConfigService.getInstance().listenerMap().entrySet()) {
-            executorService.execute(new LongPollingRunnable(repositoryEntry.getKey(), repositoryEntry.getValue()));
+        RemoteConfigRepository contextRepository = DisConfConfigManager.getInstance().getContextRepository();
+        if (contextRepository != null) {
+            executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, contextRepository));
         }
     }
 
@@ -58,12 +61,13 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
                 if (Objects.equals(valueVo.getStatus(), Constants.CONFIG_CHANGE)) {
                     String key = valueVo.getValue();
                     logger.info("config change:{}", key);
-                    configRepository.disconfSysUpdateCallback.reload(configRepository.disconfCoreMgr,null, key);
+                    DisconfCoreProcessor disconfCoreProcessor = DisConfConfigManager.getInstance().getCoreProcessor(key);
+                    disconfCoreProcessor.updateOneConfAndCallback(key);
                 }
                 executorService.execute(this);
             } catch (Exception e) {
                 logger.error("longPolling error : ", e);
-                executorService.schedule(this, 3000, TimeUnit.MILLISECONDS);
+                executorService.schedule(this, 5000, TimeUnit.MILLISECONDS);
             }
         }
     }

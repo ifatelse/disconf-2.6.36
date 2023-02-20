@@ -3,7 +3,7 @@ package com.baidu.disconf.client.core.processor.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.baidu.disconf.client.watch.inner.DisConfConfigService;
+import com.baidu.disconf.client.watch.inner.DisConfConfigManager;
 import com.baidu.disconf.client.watch.inner.DisconfSysUpdateCallback;
 import com.baidu.disconf.client.watch.inner.RemoteConfigRepository;
 import org.slf4j.Logger;
@@ -85,8 +85,8 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
                         return;
                     }
                     LOGGER.info("listener key:{}", key);
-                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(this, fetcherMgr, disConfCommonModel, new DisconfSysUpdateCallback());
-                    DisConfConfigService.getInstance().addListener(key, remoteConfigRepository);
+                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(fetcherMgr, disConfCommonModel);
+                    DisConfConfigManager.getInstance().addListener(key, this, remoteConfigRepository);
                 } else {
                     // 转存至 classpath
 

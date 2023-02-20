@@ -13,16 +13,12 @@ import com.baidu.disconf.client.fetcher.FetcherMgr;
  **/
 public class RemoteConfigRepository {
 
-    final public DisconfCoreProcessor disconfCoreMgr;
     final public FetcherMgr fetcherMgr;
     final public DisConfCommonModel disConfCommonModel;
-    final public DisconfSysUpdateCallback disconfSysUpdateCallback;
 
-    public RemoteConfigRepository(DisconfCoreProcessor disconfCoreMgr, FetcherMgr fetcherMgr, DisConfCommonModel disConfCommonModel, DisconfSysUpdateCallback disconfSysUpdateCallback) {
-        this.disconfCoreMgr = disconfCoreMgr;
+    public RemoteConfigRepository(FetcherMgr fetcherMgr, DisConfCommonModel disConfCommonModel) {
         this.fetcherMgr = fetcherMgr;
         this.disConfCommonModel = disConfCommonModel;
-        this.disconfSysUpdateCallback = disconfSysUpdateCallback;
     }
 
 }
