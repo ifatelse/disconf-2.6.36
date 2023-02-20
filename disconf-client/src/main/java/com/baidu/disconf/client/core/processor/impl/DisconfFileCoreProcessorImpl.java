@@ -87,9 +87,6 @@ public class DisconfFileCoreProcessorImpl implements DisconfCoreProcessor {
                     LOGGER.info("listener key:{}", key);
                     RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(fetcherMgr, disConfCommonModel);
                     DisConfConfigManager.getInstance().addListener(key, this, remoteConfigRepository);
-                } else {
-                    // 转存至 classpath
-
                 }
 
             } catch (Exception e) {
