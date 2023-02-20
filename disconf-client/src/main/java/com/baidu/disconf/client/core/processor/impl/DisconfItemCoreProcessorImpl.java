@@ -78,8 +78,8 @@ public class DisconfItemCoreProcessorImpl implements DisconfCoreProcessor {
                         return;
                     }
                     LOGGER.info("listener key:{}", key);
-                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(this, fetcherMgr, disConfCommonModel, new DisconfSysUpdateCallback());
-                    DisConfConfigService.getInstance().addListener(key, remoteConfigRepository);
+                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository( fetcherMgr, disConfCommonModel);
+                    DisConfConfigService.getInstance().addListener(key, this, remoteConfigRepository);
                 }
 
             } catch (Exception e) {

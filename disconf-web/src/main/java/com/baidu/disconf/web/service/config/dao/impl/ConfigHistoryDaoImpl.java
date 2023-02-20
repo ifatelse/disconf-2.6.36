@@ -63,7 +63,8 @@ public class ConfigHistoryDaoImpl extends AbstractDao<Long, ConfigHistory> imple
         String sql = "select " +
                 "    ch.id, " +
                 "    c.name as confName, " +
-                "    concat(c.app_id, '+', c.name, '+', c.version, '+', c.env_id) as confKey " +
+                // "    concat(c.app_id, '+', c.name, '+', c.version, '+', c.env_id) as confKey " +
+                "    concat(c.app_id, '+', c.version, '+', c.env_id) as confKey " +
                 " from " +
                 "    config c " +
                 "    left join config_history ch on ch.config_id = c.config_id " +

@@ -74,35 +74,56 @@ public class ConfigNotifyController extends AbstractEventListener {
             throw new DocumentNotFoundException(confForm.toString());
         }
 
-        Set<String> confNames = StringUtils.commaDelimitedListToSet(configModel.getKey());
-
-        List<String> watchKeys = assembleAllWatchKeys(configModel, confNames);
-
+        // Set<String> confNames = StringUtils.commaDelimitedListToSet(configModel.getKey());
+        //
+        // List<String> watchKeys = assembleAllWatchKeys(configModel, confNames);
+        //
+        //
+        // DeferredResultWrapper deferredResultWrapper = new DeferredResultWrapper();
+        //
+        // deferredResultWrapper.onTimeout(() -> {
+        //     for (String key : watchKeys) {
+        //         logger.info("LongPoll.TimeOutKeys:{}", key);
+        //     }
+        // });
+        //
+        // deferredResultWrapper.onCompletion(() -> {
+        //     for (String key : watchKeys) {
+        //         logger.info("LongPoll.CompletedKeys:{}", key);
+        //         deferredResults.remove(key, deferredResultWrapper);
+        //     }
+        // });
+        //
+        // for (String watchKey : watchKeys) {
+        //     deferredResults.put(watchKey, deferredResultWrapper);
+        // }
+        String watchKey = assembleWatchKey(configModel);
 
         DeferredResultWrapper deferredResultWrapper = new DeferredResultWrapper();
 
         deferredResultWrapper.onTimeout(() -> {
-            for (String key : watchKeys) {
-                logger.info("LongPoll.TimeOutKeys:{}", key);
-            }
+            logger.debug("LongPoll.TimeOutKeys:{}", watchKey);
         });
 
         deferredResultWrapper.onCompletion(() -> {
-            for (String key : watchKeys) {
-                logger.info("LongPoll.CompletedKeys:{}", key);
-                deferredResults.remove(key, deferredResultWrapper);
-            }
+            logger.debug("LongPoll.CompletedKeys:{}", watchKey);
+            deferredResults.remove(watchKey, deferredResultWrapper);
         });
 
-        for (String watchKey : watchKeys) {
-            deferredResults.put(watchKey, deferredResultWrapper);
-        }
+        deferredResults.put(watchKey, deferredResultWrapper);
+
 
         return deferredResultWrapper.getResult();
     }
 
     private List<String> assembleAllWatchKeys(ConfigFullModel configModel, Set<String> confNames) {
         return confNames.stream().map(confName -> assembleWatchKey(configModel.getApp().getId(), confName, configModel.getVersion(), configModel.getEnv().getId())).collect(Collectors.toList());
+    }
+
+    private String assembleWatchKey(ConfigFullModel configModel) {
+        return configModel.getApp().getId() + Constants.CON_STRING +
+                configModel.getVersion() + Constants.CON_STRING +
+                configModel.getEnv().getId();
     }
 
 

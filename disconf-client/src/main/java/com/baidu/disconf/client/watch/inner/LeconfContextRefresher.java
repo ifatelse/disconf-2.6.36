@@ -2,7 +2,9 @@ package com.baidu.disconf.client.watch.inner;
 
 
 import com.baidu.disconf.client.common.model.DisConfCommonModel;
+import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.client.config.DisClientSysConfig;
+import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
@@ -34,8 +36,13 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        for (Map.Entry<String, RemoteConfigRepository> repositoryEntry : DisConfConfigService.getInstance().listenerMap().entrySet()) {
-            executorService.execute(new LongPollingRunnable(repositoryEntry.getKey(), repositoryEntry.getValue()));
+        // for (Map.Entry<String, RemoteConfigRepository> repositoryEntry : DisConfConfigService.getInstance().listenerMap().entrySet()) {
+        //     executorService.execute(new LongPollingRunnable(repositoryEntry.getKey(), repositoryEntry.getValue()));
+        // }
+
+        RemoteConfigRepository configRepository = DisConfConfigService.getInstance().getConfigRepository();
+        if (configRepository != null) {
+            executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, configRepository));
         }
     }
 
@@ -58,7 +65,8 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
                 if (Objects.equals(valueVo.getStatus(), Constants.CONFIG_CHANGE)) {
                     String key = valueVo.getValue();
                     logger.info("config change:{}", key);
-                    configRepository.disconfSysUpdateCallback.reload(configRepository.disconfCoreMgr,null, key);
+                    DisconfCoreProcessor leconfCoreProcessor = DisConfConfigService.INSTANCE.getCoreProcessor(key);
+                    leconfCoreProcessor.updateOneConfAndCallback(key);
                 }
                 executorService.execute(this);
             } catch (Exception e) {
