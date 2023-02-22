@@ -4,7 +4,10 @@ import com.baidu.disconf.core.common.remote.Request;
 import com.baidu.disconf.core.common.remote.RequestHandler;
 import com.baidu.disconf.core.common.remote.Response;
 import com.baidu.disconf.core.common.utils.GsonUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,7 +45,13 @@ public class MessageHandler {
 
         Response response = requestHandler.handle((Request) requestObj);
 
-        ctx.channel().writeAndFlush(GsonUtils.toJson(response));
+        ByteBuf data = Unpooled.wrappedBuffer(GsonUtils.toJson(response).getBytes(CharsetUtil.UTF_8));
+        int length = data.readableBytes();
+        ByteBuf buffer = Unpooled.buffer(2 + length);
+        buffer.writeShort(length);
+        buffer.writeBytes(data);
+
+        ctx.channel().writeAndFlush(buffer);
 
     }
 }

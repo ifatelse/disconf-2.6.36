@@ -44,7 +44,7 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
                 continue;
             }
 
-            Class tClass = (Class) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
+            Class<?> tClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
 
             registryHandlers.putIfAbsent(tClass.getSimpleName(), requestHandler);
 

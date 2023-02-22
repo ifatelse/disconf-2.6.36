@@ -67,7 +67,7 @@ public class NettyServer {
                 });
 
 
-        bootstrap.bind(new InetSocketAddress("127.0.0.1", 10010 + 1000));
+        bootstrap.bind(10010 + 1000);
 
         logger.info("Netty Server Start...");
     }

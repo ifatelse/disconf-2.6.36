@@ -46,6 +46,7 @@ public class ConfigQueryRequestHandler extends RequestHandler<ConfigQueryRequest
         String value = config.getValue();
 
         ConfigQueryResponse configQueryResponse = new ConfigQueryResponse();
+        configQueryResponse.setRequestId(request.getRequestId());
         configQueryResponse.setMessage(ConfigQueryResponse.class.getSimpleName());
         configQueryResponse.setFileName(confForm.getKey());
         configQueryResponse.setValue(value);
