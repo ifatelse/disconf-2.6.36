@@ -58,7 +58,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     // 发送消息
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
-        logger.info("发送消息");
+        logger.info("发送消息:" + msg);
         super.write(ctx, msg, promise);
     }
 

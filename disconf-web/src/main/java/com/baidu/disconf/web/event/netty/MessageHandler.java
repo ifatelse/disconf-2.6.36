@@ -1,5 +1,6 @@
 package com.baidu.disconf.web.event.netty;
 
+import com.baidu.disconf.core.common.remote.HeartBeatRequest;
 import com.baidu.disconf.core.common.remote.Request;
 import com.baidu.disconf.core.common.remote.RequestHandler;
 import com.baidu.disconf.core.common.remote.Response;
@@ -11,7 +12,9 @@ import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Description :
@@ -39,11 +42,17 @@ public class MessageHandler {
             return;
         }
 
+        if (Objects.equals(msgType, HeartBeatRequest.class.getSimpleName())) {
+            String address = toAddressString((InetSocketAddress) ctx.channel().remoteAddress());
+            NettyChannelService.saveChannel(address, ctx);
+            return;
+        }
+
         Class<?> requestClass = requestHandlerRegistry.getByRequestClassType(msgType);
 
         Object requestObj = GsonUtils.fromJson((String) msg, requestClass);
 
-        Response response = requestHandler.handle((Request) requestObj);
+        Response response = requestHandler.handle((Request) requestObj, ctx);
 
         ByteBuf data = Unpooled.wrappedBuffer(GsonUtils.toJson(response).getBytes(CharsetUtil.UTF_8));
         int length = data.readableBytes();
@@ -53,5 +62,9 @@ public class MessageHandler {
 
         ctx.channel().writeAndFlush(buffer);
 
+    }
+
+    public static String toAddressString(InetSocketAddress address) {
+        return address.getAddress().getHostAddress() + ":" + address.getPort();
     }
 }

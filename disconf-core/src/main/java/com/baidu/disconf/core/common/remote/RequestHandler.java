@@ -1,5 +1,7 @@
 package com.baidu.disconf.core.common.remote;
 
+import io.netty.channel.ChannelHandlerContext;
+
 /**
  * @Description :
  * @Author : Lethe
@@ -9,6 +11,6 @@ package com.baidu.disconf.core.common.remote;
  **/
 public abstract class RequestHandler<T extends Request, S extends Response> {
 
-    public abstract S handle(T request);
+    public abstract S handle(T request, ChannelHandlerContext ctx);
 
 }

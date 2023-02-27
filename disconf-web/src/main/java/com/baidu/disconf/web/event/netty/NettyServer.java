@@ -1,6 +1,7 @@
 package com.baidu.disconf.web.event.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -45,14 +46,20 @@ public class NettyServer {
 
         ServerBootstrap bootstrap = new ServerBootstrap();
 
-        bossGroup = new NioEventLoopGroup();
-        workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
 
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(messageHandler);
 
         bootstrap.group(bossGroup, workerGroup)
+                // 设置线程队列得到连接个数
                 .option(ChannelOption.SO_BACKLOG, 128)
+                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                // 当SO_KEEPALIVE=true的时候,服务端可以探测客户端的连接是否还存活着,如果客户端关闭了,那么服务端的连接可以关闭掉,释放资源
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
+                // 允许重复使用本地地址和端口
+                .childOption(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<Channel>() {
                     @Override
@@ -61,7 +68,7 @@ public class NettyServer {
                                 .addLast("lengthFieldBasedFrameDecoder", new LengthFieldBasedFrameDecoder(1024,0,2,0,2))
                                 .addLast("decoder", new StringDecoder())
                                 .addLast("encoder", new StringEncoder())
-                                .addLast("server-idle-handler", new IdleStateHandler(0, 0, 5, TimeUnit.SECONDS))
+                                .addLast("server-idle-handler", new IdleStateHandler(0, 0, 10, TimeUnit.SECONDS))
                                 .addLast(nettyServerHandler);
                     }
                 });

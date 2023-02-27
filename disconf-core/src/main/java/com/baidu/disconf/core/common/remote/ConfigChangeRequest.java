@@ -19,6 +19,8 @@ public class ConfigChangeRequest extends Request implements Serializable {
 
     private String env;
 
+    private String fileName;
+
     public String getAppName() {
         return appName;
     }
@@ -41,5 +43,13 @@ public class ConfigChangeRequest extends Request implements Serializable {
 
     public void setEnv(String env) {
         this.env = env;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

@@ -9,6 +9,7 @@ import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.service.config.service.ConfigFetchMgr;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
 import com.baidu.disconf.web.web.config.validator.ConfigValidator4Fetch;
+import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,7 @@ public class ConfigQueryRequestHandler extends RequestHandler<ConfigQueryRequest
 
 
     @Override
-    public ConfigQueryResponse handle(ConfigQueryRequest request) {
+    public ConfigQueryResponse handle(ConfigQueryRequest request, ChannelHandlerContext ctx) {
 
         ConfForm confForm = new ConfForm();
         confForm.setApp(request.getAppName());
@@ -47,7 +48,7 @@ public class ConfigQueryRequestHandler extends RequestHandler<ConfigQueryRequest
 
         ConfigQueryResponse configQueryResponse = new ConfigQueryResponse();
         configQueryResponse.setRequestId(request.getRequestId());
-        configQueryResponse.setMessage(ConfigQueryResponse.class.getSimpleName());
+        configQueryResponse.setMsgType(ConfigQueryResponse.class.getSimpleName());
         configQueryResponse.setFileName(confForm.getKey());
         configQueryResponse.setValue(value);
 

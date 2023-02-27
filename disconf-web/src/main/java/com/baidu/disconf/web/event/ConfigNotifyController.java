@@ -3,6 +3,7 @@ package com.baidu.disconf.web.event;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.utils.DisconfThreadFactory;
+import com.baidu.disconf.web.event.netty.NettyChannelService;
 import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
 import com.baidu.disconf.web.web.config.validator.ConfigValidator4Fetch;
@@ -163,15 +164,16 @@ public class ConfigNotifyController extends AbstractEventListener {
 
         @Override
         public void run() {
-            List<DeferredResultWrapper> deferredResultList = Lists.newArrayList(deferredResults.get(confKey));
-            logger.info("change notify:{}", deferredResultList.size());
-            for (DeferredResultWrapper wrapper : deferredResultList) {
-                ValueVo valueVo = new ValueVo();
-                valueVo.setStatus(Constants.CONFIG_CHANGE);
-                valueVo.setMessage("change");
-                valueVo.setValue(confName);
-                wrapper.setResult(valueVo);
-            }
+            // List<DeferredResultWrapper> deferredResultList = Lists.newArrayList(deferredResults.get(confKey));
+            // logger.info("change notify:{}", deferredResultList.size());
+            // for (DeferredResultWrapper wrapper : deferredResultList) {
+            //     ValueVo valueVo = new ValueVo();
+            //     valueVo.setStatus(Constants.CONFIG_CHANGE);
+            //     valueVo.setMessage("change");
+            //     valueVo.setValue(confName);
+            //     wrapper.setResult(valueVo);
+            // }
+            NettyChannelService.notifyChange(confKey, confName);
         }
     }
 
