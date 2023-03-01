@@ -1,6 +1,6 @@
 package com.baidu.disconf.web.event;
 
-import com.baidu.disconf.core.common.json.ValueVo;
+import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
 import com.baidu.disconf.web.web.config.validator.ConfigValidator4Fetch;
@@ -8,22 +8,18 @@ import com.baidu.dsp.common.annotation.NoAuth;
 import com.baidu.dsp.common.constant.WebConstants;
 import com.baidu.dsp.common.exception.DocumentNotFoundException;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,9 +43,12 @@ public class ConfigAsyncNotifyController {
     @Autowired
     private ConfigValidator4Fetch configValidator4Fetch;
 
+    @Autowired
+    private AsyncLongPollService asyncLongPollService;
+
 
     @NoAuth
-    @RequestMapping(value = "/async/file", method = RequestMethod.GET)
+    @RequestMapping(value = "/change", method = RequestMethod.GET)
     @ResponseBody
     public void getFile(HttpServletRequest request, HttpServletResponse response, ConfForm confForm) {
 
@@ -68,20 +67,20 @@ public class ConfigAsyncNotifyController {
             throw new DocumentNotFoundException(confForm.toString());
         }
 
-        // 一定要由HTTP线程调用，否则离开后容器会立即发送响应
-        final AsyncContext asyncContext = request.startAsync();
-        // AsyncContext.setTimeout()的超时时间不准，所以只能自己控制
-        asyncContext.setTimeout(0L);
+        String watchKey = assembleWatchKey(configModel);
 
-
-        Set<String> fileNames = StringUtils.commaDelimitedListToSet(configModel.getKey());
-
-        List<String> watchKeys = assembleAllWatchKeys(configModel, fileNames);
+        asyncLongPollService.doPollingConfig(request, response, watchKey);
 
     }
 
     private List<String> assembleAllWatchKeys(ConfigFullModel configModel, Set<String> fileNames) {
         return fileNames.stream().map(fileName -> configModel.getApp().getId() + "-" + fileName + "-" + configModel.getVersion() + "-" + configModel.getEnv().getId()).collect(Collectors.toList());
+    }
+
+    private String assembleWatchKey(ConfigFullModel configModel) {
+        return configModel.getApp().getId() + Constants.CON_STRING +
+                configModel.getVersion() + Constants.CON_STRING +
+                configModel.getEnv().getId();
     }
 
 

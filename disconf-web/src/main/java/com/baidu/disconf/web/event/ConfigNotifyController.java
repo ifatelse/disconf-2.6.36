@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2022 All Rights Reserved
  **/
-@Controller
-@RequestMapping(WebConstants.API_PREFIX + "/notify")
+// @Controller
+// @RequestMapping(WebConstants.API_PREFIX + "/notify")
 public class ConfigNotifyController extends AbstractEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigNotifyController.class);
@@ -141,13 +141,13 @@ public class ConfigNotifyController extends AbstractEventListener {
 
     @Override
     void onEvent(Event event) {
-        if (event instanceof ConfigChangeEvent) {
-            ConfigChangeEvent evt = (ConfigChangeEvent) event;
-            String confName = evt.confName;
-            String confKey = evt.confKey;
-            logger.info("change confName:{}, confKey:{}", confName, confKey);
-            notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
-        }
+        // if (event instanceof ConfigChangeEvent) {
+        //     ConfigChangeEvent evt = (ConfigChangeEvent) event;
+        //     String confName = evt.confName;
+        //     String confKey = evt.confKey;
+        //     logger.info("change confName:{}, confKey:{}", confName, confKey);
+        //     notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
+        // }
     }
 
 
