@@ -7,7 +7,7 @@ package com.baidu.disconf.core.common.remote;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
-public abstract class Response {
+public class Response {
 
     private String requestId;
 
@@ -15,7 +15,9 @@ public abstract class Response {
 
     private String message;
 
-    private String msgType;
+    private String event;
+
+    private Object data;
 
     public String getRequestId() {
         return requestId;
@@ -41,11 +43,19 @@ public abstract class Response {
         this.message = message;
     }
 
-    public String getMsgType() {
-        return msgType;
+    public String getEvent() {
+        return event;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType;
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

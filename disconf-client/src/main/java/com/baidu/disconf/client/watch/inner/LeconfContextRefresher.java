@@ -5,6 +5,9 @@ import com.baidu.disconf.client.common.model.DisConfCommonModel;
 import com.baidu.disconf.client.config.DisClientConfig;
 import com.baidu.disconf.client.config.DisClientSysConfig;
 import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
+import com.baidu.disconf.client.watch.netty.ConfigChangeResponseHandler;
+import com.baidu.disconf.client.watch.netty.NettyChannelExchanger;
+import com.baidu.disconf.client.watch.netty.ResponseMessageHandler;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
@@ -14,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -33,16 +35,22 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), DisconfThreadFactory.create("RemoteConfigLongPollService", true));
 
+    String type = System.getProperty("listen_type", "http");
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        // for (Map.Entry<String, RemoteConfigRepository> repositoryEntry : DisConfConfigService.getInstance().listenerMap().entrySet()) {
-        //     executorService.execute(new LongPollingRunnable(repositoryEntry.getKey(), repositoryEntry.getValue()));
-        // }
 
         RemoteConfigRepository configRepository = DisConfConfigService.getInstance().getConfigRepository();
         if (configRepository != null) {
-            executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, configRepository));
+
+            logger.info("listen config change type: {}", type);
+
+            if (Objects.equals(type, Constants.LISTEN_TYPE_HTTP)) {
+                executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, configRepository));
+            } else {
+                NettyChannelExchanger.connect(DisClientConfig.getInstance().CONF_SERVER_HOST, Constants.NETTY_PORT, new ResponseMessageHandler(), new ConfigChangeResponseHandler());
+                NettyChannelExchanger.executeConfigListen(DisClientConfig.getInstance().APP, configRepository.disConfCommonModel);
+            }
         }
     }
 
@@ -82,7 +90,6 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
         String env = disConfCommonModel.getEnv();
         return DisconfWebPathMgr.getRemoteUrlParameter(DisClientSysConfig.getInstance().CONF_SERVER_NOTIFY_ACTION, app, version, env, key);
     }
-
 
 
 }

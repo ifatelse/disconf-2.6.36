@@ -78,7 +78,7 @@ public class DisconfItemCoreProcessorImpl implements DisconfCoreProcessor {
                         return;
                     }
                     LOGGER.info("listener key:{}", key);
-                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository( fetcherMgr, disConfCommonModel);
+                    RemoteConfigRepository remoteConfigRepository = new RemoteConfigRepository(fetcherMgr, disConfCommonModel);
                     DisConfConfigService.getInstance().addListener(key, this, remoteConfigRepository);
                 }
 

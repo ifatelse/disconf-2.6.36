@@ -16,7 +16,17 @@ public class ConfigChangeResponse extends Response implements Serializable {
     public ConfigChangeResponse() {
     }
 
+    private Integer status;
+
     private String fileName;
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
 
     public String getFileName() {
         return fileName;

@@ -30,6 +30,11 @@ public class Constants {
     public static final Integer CONFIG_CHANGE = 200;
     public final static String CON_STRING = "+";
 
+    public final static String LISTEN_TYPE_HTTP = "http";
+    public final static String LISTEN_TYPE_NETTY = "netty";
+
+    public final static Integer NETTY_PORT = 8888;
+
 
     /**
      * zookeeper的一些常量设置

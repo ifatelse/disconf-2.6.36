@@ -11,21 +11,11 @@ public abstract class Request {
 
     private String requestId;
 
-    private String msgType;
-
     public String getRequestId() {
         return requestId;
     }
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
-    }
-
-    public String getMsgType() {
-        return msgType;
-    }
-
-    public void setMsgType(String msgType) {
-        this.msgType = msgType;
     }
 }

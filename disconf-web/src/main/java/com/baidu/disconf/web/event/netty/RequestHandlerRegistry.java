@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class RequestHandlerRegistry implements ApplicationListener<ContextRefreshedEvent> {
 
-    Map<String, RequestHandler<?, ?>> registryHandlers = new HashMap<>();
+    private static final Map<String, RequestHandler<?>> REGISTRY_HANDLERS = new HashMap<>();
 
     private static final Map<String, Class<?>> REGISTRY_REQUEST = new HashMap<>();
 
@@ -29,7 +29,7 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
     public void onApplicationEvent(ContextRefreshedEvent event) {
         Map<String, RequestHandler> beansOfType = event.getApplicationContext().getBeansOfType(RequestHandler.class);
         Collection<RequestHandler> values = beansOfType.values();
-        for (RequestHandler requestHandler : values) {
+        for (RequestHandler<?> requestHandler : values) {
 
             Class<?> clazz = requestHandler.getClass();
             boolean skip = false;
@@ -46,7 +46,7 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
 
             Class<?> tClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
 
-            registryHandlers.putIfAbsent(tClass.getSimpleName(), requestHandler);
+            REGISTRY_HANDLERS.putIfAbsent(tClass.getSimpleName(), requestHandler);
 
             REGISTRY_REQUEST.put(tClass.getSimpleName(), tClass);
 
@@ -54,8 +54,8 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
     }
 
 
-    public RequestHandler getByRequestType(String requestType) {
-        return registryHandlers.get(requestType);
+    public RequestHandler<?> getByRequestType(String requestType) {
+        return REGISTRY_HANDLERS.get(requestType);
     }
 
     public Class<?> getByRequestClassType(String requestType) {

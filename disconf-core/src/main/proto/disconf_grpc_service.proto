@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.baidu.disconf.core.grpc.auto";
+
+
+message Message {
+  string type = 1;
+  google.protobuf.Any body = 3;
+}
+
+
+service Request {
+  rpc request (Message) returns (Message){
+  }
+}
+
+service RequestStream {
+  rpc requestStream (Message) returns (stream Message) {
+  }
+}
+
+service BiRequestStream {
+  rpc biRequestStream (stream Message) returns (stream Message) {
+  }
+}

@@ -1,11 +1,11 @@
 package com.baidu.disconf.web.event.netty;
 
-import com.baidu.disconf.core.common.remote.ConfigQueryRequest;
-import com.baidu.disconf.core.common.utils.GsonUtils;
+import com.baidu.disconf.core.common.remote.MessageHandler;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     // 收到消息时，改方法被调用
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info("接收到消息:" + msg);
+        // logger.info("接收到消息:" + msg);
         messageHandler.handler(ctx, msg);
     }
 
@@ -66,16 +66,12 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 
-        for (Map.Entry<String, ChannelHandlerContext> contextEntry : NettyChannelService.getChannels().entrySet()) {
-            String key = contextEntry.getKey();
-            ChannelHandlerContext value = contextEntry.getValue();
-            logger.info(key + "------" + value + "-------" + value.channel().isActive());
-        }
-
         if (evt instanceof IdleStateEvent) {
-
-            logger.info("已经5秒未收到客户端的消息了！" + new Date());
-
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event.state() == IdleState.READER_IDLE) {
+                String address = toAddressString((InetSocketAddress) ctx.channel().remoteAddress());
+                NettyChannelService.removeChannel(address);
+            }
         } else {
             super.userEventTriggered(ctx, evt);
         }

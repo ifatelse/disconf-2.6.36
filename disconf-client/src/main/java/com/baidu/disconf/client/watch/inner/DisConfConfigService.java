@@ -27,18 +27,12 @@ public class DisConfConfigService {
         return INSTANCE;
     }
 
-    public void addListener(String key, RemoteConfigRepository remoteConfigRepository) {
-        listenerMap.put(key, remoteConfigRepository);
-    }
 
     public void addListener(String key, DisconfCoreProcessor leconfCoreProcessor, RemoteConfigRepository remoteConfigRepository) {
         listenerMap.put(key, remoteConfigRepository);
         processorMap.put(key, leconfCoreProcessor);
     }
 
-    public Map<String, RemoteConfigRepository> listenerMap() {
-        return listenerMap;
-    }
 
     public DisconfCoreProcessor getCoreProcessor(String key) {
         return processorMap.get(key);

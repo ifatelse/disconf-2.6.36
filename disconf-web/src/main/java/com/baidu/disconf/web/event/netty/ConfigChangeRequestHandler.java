@@ -2,7 +2,6 @@ package com.baidu.disconf.web.event.netty;
 
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.remote.ConfigChangeRequest;
-import com.baidu.disconf.core.common.remote.ConfigChangeResponse;
 import com.baidu.disconf.core.common.remote.RequestHandler;
 import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
@@ -19,13 +18,13 @@ import org.springframework.stereotype.Component;
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
 @Component
-public class ConfigChangeRequestHandler extends RequestHandler<ConfigChangeRequest, ConfigChangeResponse> {
+public class ConfigChangeRequestHandler extends RequestHandler<ConfigChangeRequest> {
 
     @Autowired
     private ConfigValidator4Fetch configValidator4Fetch;
 
     @Override
-    public ConfigChangeResponse handle(ConfigChangeRequest request, ChannelHandlerContext ctx) {
+    public void handle(ConfigChangeRequest request, ChannelHandlerContext ctx) {
 
         ConfForm confForm = new ConfForm();
         confForm.setApp(request.getAppName());
@@ -39,9 +38,17 @@ public class ConfigChangeRequestHandler extends RequestHandler<ConfigChangeReque
 
         NettyChannelService.listenerChannel(watchKey, ctx);
 
-        ConfigChangeResponse configChangeResponse = new ConfigChangeResponse();
-        configChangeResponse.setMsgType(ConfigChangeResponse.class.getSimpleName());
-        return configChangeResponse;
+        // ConfigChangeResponse configChangeResponse = new ConfigChangeResponse();
+        // configChangeResponse.setEvent(ConfigChangeResponse.class.getSimpleName());
+        //
+        // ByteBuf data = Unpooled.wrappedBuffer(GsonUtils.toJson(configChangeResponse).getBytes(CharsetUtil.UTF_8));
+        // int length = data.readableBytes();
+        // ByteBuf buffer = Unpooled.buffer(2 + length);
+        // buffer.writeShort(length);
+        // buffer.writeBytes(data);
+        //
+        // ctx.channel().writeAndFlush(buffer);
+
     }
 
 }

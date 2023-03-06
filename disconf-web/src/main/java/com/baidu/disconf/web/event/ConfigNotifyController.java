@@ -3,7 +3,6 @@ package com.baidu.disconf.web.event;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.utils.DisconfThreadFactory;
-import com.baidu.disconf.web.event.netty.NettyChannelService;
 import com.baidu.disconf.web.service.config.form.ConfForm;
 import com.baidu.disconf.web.web.config.dto.ConfigFullModel;
 import com.baidu.disconf.web.web.config.validator.ConfigValidator4Fetch;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,10 +24,8 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 /**
  * @Description :
@@ -75,29 +71,6 @@ public class ConfigNotifyController extends AbstractEventListener {
             throw new DocumentNotFoundException(confForm.toString());
         }
 
-        // Set<String> confNames = StringUtils.commaDelimitedListToSet(configModel.getKey());
-        //
-        // List<String> watchKeys = assembleAllWatchKeys(configModel, confNames);
-        //
-        //
-        // DeferredResultWrapper deferredResultWrapper = new DeferredResultWrapper();
-        //
-        // deferredResultWrapper.onTimeout(() -> {
-        //     for (String key : watchKeys) {
-        //         logger.info("LongPoll.TimeOutKeys:{}", key);
-        //     }
-        // });
-        //
-        // deferredResultWrapper.onCompletion(() -> {
-        //     for (String key : watchKeys) {
-        //         logger.info("LongPoll.CompletedKeys:{}", key);
-        //         deferredResults.remove(key, deferredResultWrapper);
-        //     }
-        // });
-        //
-        // for (String watchKey : watchKeys) {
-        //     deferredResults.put(watchKey, deferredResultWrapper);
-        // }
         String watchKey = assembleWatchKey(configModel);
 
         DeferredResultWrapper deferredResultWrapper = new DeferredResultWrapper();
@@ -113,12 +86,7 @@ public class ConfigNotifyController extends AbstractEventListener {
 
         deferredResults.put(watchKey, deferredResultWrapper);
 
-
         return deferredResultWrapper.getResult();
-    }
-
-    private List<String> assembleAllWatchKeys(ConfigFullModel configModel, Set<String> confNames) {
-        return confNames.stream().map(confName -> assembleWatchKey(configModel.getApp().getId(), confName, configModel.getVersion(), configModel.getEnv().getId())).collect(Collectors.toList());
     }
 
     private String assembleWatchKey(ConfigFullModel configModel) {
@@ -141,7 +109,7 @@ public class ConfigNotifyController extends AbstractEventListener {
     }
 
     @Override
-    void onEvent(Event event) {
+    public void onEvent(Event event) {
         if (event instanceof ConfigChangeEvent) {
             ConfigChangeEvent evt = (ConfigChangeEvent) event;
             String confName = evt.confName;
@@ -164,16 +132,15 @@ public class ConfigNotifyController extends AbstractEventListener {
 
         @Override
         public void run() {
-            // List<DeferredResultWrapper> deferredResultList = Lists.newArrayList(deferredResults.get(confKey));
-            // logger.info("change notify:{}", deferredResultList.size());
-            // for (DeferredResultWrapper wrapper : deferredResultList) {
-            //     ValueVo valueVo = new ValueVo();
-            //     valueVo.setStatus(Constants.CONFIG_CHANGE);
-            //     valueVo.setMessage("change");
-            //     valueVo.setValue(confName);
-            //     wrapper.setResult(valueVo);
-            // }
-            NettyChannelService.notifyChange(confKey, confName);
+            List<DeferredResultWrapper> deferredResultList = Lists.newArrayList(deferredResults.get(confKey));
+            logger.info("change notify:{}", deferredResultList.size());
+            for (DeferredResultWrapper wrapper : deferredResultList) {
+                ValueVo valueVo = new ValueVo();
+                valueVo.setStatus(Constants.CONFIG_CHANGE);
+                valueVo.setMessage("change");
+                valueVo.setValue(confName);
+                wrapper.setResult(valueVo);
+            }
         }
     }
 

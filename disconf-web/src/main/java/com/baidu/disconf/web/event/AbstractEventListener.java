@@ -24,6 +24,6 @@ public abstract class AbstractEventListener {
     abstract public List<Class<? extends Event>> interest();
 
 
-    abstract void onEvent(Event event);
+    abstract public void onEvent(Event event);
 
 }
