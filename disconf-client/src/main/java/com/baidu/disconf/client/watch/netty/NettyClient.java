@@ -67,6 +67,7 @@ public class NettyClient {
         boolean ret = future.awaitUninterruptibly(getConnectTimeout(), TimeUnit.MILLISECONDS);
         if (ret && future.isSuccess()) {
             channel = future.channel();
+            log.info("connect to listen server success");
         } else if (future.cause() != null) {
             throw new RuntimeException("failed to connect to server " + serverIp + ":" + serverPort + ", error message is:" + future.cause().getMessage(), future.cause());
         } else {
