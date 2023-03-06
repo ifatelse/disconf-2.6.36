@@ -42,6 +42,10 @@ public class NettyChannelService {
         return contextSetMultimap.get(watchKey);
     }
 
+    public static boolean watchCtxIsEmpty() {
+        return contextSetMultimap.isEmpty();
+    }
+
 
     public static String toAddressString(InetSocketAddress address) {
         return address.getAddress().getHostAddress() + ":" + address.getPort();

@@ -114,8 +114,10 @@ public class ConfigNotifyController extends AbstractEventListener {
             ConfigChangeEvent evt = (ConfigChangeEvent) event;
             String confName = evt.confName;
             String confKey = evt.confKey;
-            logger.info("change confName:{}, confKey:{}", confName, confKey);
-            notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
+            if (!deferredResults.isEmpty()) {
+                logger.info("change confName:{}, confKey:{}", confName, confKey);
+                notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
+            }
         }
     }
 

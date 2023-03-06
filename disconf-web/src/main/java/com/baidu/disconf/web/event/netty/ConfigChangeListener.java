@@ -10,6 +10,7 @@ import com.baidu.disconf.web.event.Event;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.concurrent.Executors;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
+@Component
 public class ConfigChangeListener extends AbstractEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigChangeListener.class);
@@ -44,8 +46,10 @@ public class ConfigChangeListener extends AbstractEventListener {
             ConfigChangeEvent evt = (ConfigChangeEvent) event;
             String confName = evt.confName;
             String confKey = evt.confKey;
-            logger.info("change confName:{}, confKey:{}", confName, confKey);
-            notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
+            if (!NettyChannelService.watchCtxIsEmpty()) {
+                logger.info("change confName:{}, confKey:{}", confName, confKey);
+                notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
+            }
         }
     }
 

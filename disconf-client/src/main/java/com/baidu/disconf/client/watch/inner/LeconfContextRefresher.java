@@ -48,7 +48,7 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
             if (Objects.equals(type, Constants.LISTEN_TYPE_HTTP)) {
                 executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, configRepository));
             } else {
-                NettyChannelExchanger.connect(DisClientConfig.getInstance().CONF_SERVER_HOST, Constants.NETTY_PORT, new ResponseMessageHandler(), new ConfigChangeResponseHandler());
+                NettyChannelExchanger.connect("127.0.0.1", Constants.NETTY_PORT, new ResponseMessageHandler(), new ConfigChangeResponseHandler());
                 NettyChannelExchanger.executeConfigListen(DisClientConfig.getInstance().APP, configRepository.disConfCommonModel);
             }
         }
