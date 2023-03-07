@@ -1,7 +1,6 @@
 package com.baidu.disconf.web.event.netty;
 
 import com.baidu.disconf.core.common.remote.Message;
-import com.baidu.disconf.core.common.remote.MessageHandler;
 import com.baidu.disconf.core.common.remote.Request;
 import com.baidu.disconf.core.common.remote.RequestHandler;
 import com.baidu.disconf.core.common.utils.GsonUtils;
@@ -17,12 +16,12 @@ import org.springframework.stereotype.Component;
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
 @Component
-public class RequestMessageHandler extends MessageHandler {
+public class RequestMessageHandler {
 
     @Autowired
     RequestHandlerRegistry requestHandlerRegistry;
 
-    @Override
+
     public void handler(ChannelHandlerContext ctx, Object msg) {
 
 

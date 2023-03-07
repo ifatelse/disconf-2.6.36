@@ -1,6 +1,5 @@
 package com.baidu.disconf.web.event.netty;
 
-import com.baidu.disconf.core.common.remote.MessageHandler;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * @Description :
@@ -26,9 +23,9 @@ public class NettyServerHandler extends ChannelDuplexHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServerHandler.class);
 
-    private MessageHandler messageHandler;
+    private RequestMessageHandler messageHandler;
 
-    public NettyServerHandler(MessageHandler messageHandler) {
+    public NettyServerHandler(RequestMessageHandler messageHandler) {
         this.messageHandler = messageHandler;
     }
 
@@ -51,7 +48,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     // 收到消息时，改方法被调用
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        // logger.info("接收到消息:" + msg);
+        logger.info("接收到消息:" + msg);
         messageHandler.handler(ctx, msg);
     }
 

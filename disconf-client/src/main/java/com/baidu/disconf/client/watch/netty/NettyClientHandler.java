@@ -15,6 +15,12 @@ import io.netty.channel.ChannelPromise;
 @ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
 
+    private ResponseMessageHandler messageHandler;
+
+    public NettyClientHandler(ResponseMessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         ctx.fireChannelActive();
@@ -27,7 +33,7 @@ public class NettyClientHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        NettyChannelExchanger.handler(ctx, msg);
+        messageHandler.handler(ctx, msg);
     }
 
     @Override

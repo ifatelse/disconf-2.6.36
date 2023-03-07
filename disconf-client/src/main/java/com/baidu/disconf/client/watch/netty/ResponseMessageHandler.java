@@ -1,6 +1,8 @@
 package com.baidu.disconf.client.watch.netty;
 
-import com.baidu.disconf.core.common.remote.*;
+import com.baidu.disconf.core.common.remote.Message;
+import com.baidu.disconf.core.common.remote.Response;
+import com.baidu.disconf.core.common.remote.ResponseHandler;
 import com.baidu.disconf.core.common.utils.GsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -11,9 +13,9 @@ import io.netty.channel.ChannelHandlerContext;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
-public class ResponseMessageHandler extends MessageHandler {
+public class ResponseMessageHandler {
 
-    @Override
+
     public void handler(ChannelHandlerContext ctx, Object msg) {
 
         Message message = (Message) msg;

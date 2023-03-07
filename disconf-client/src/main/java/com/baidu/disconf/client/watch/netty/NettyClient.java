@@ -43,7 +43,7 @@ public class NettyClient {
 
         EventLoopGroup group = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
 
-        final NettyClientHandler nettyClientHandler = new NettyClientHandler();
+        final NettyClientHandler nettyClientHandler = new NettyClientHandler(new ResponseMessageHandler());
 
         bootstrap.group(group)
                 .option(ChannelOption.TCP_NODELAY, true)

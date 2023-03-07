@@ -1,8 +1,10 @@
 package com.baidu.disconf.client.watch.netty;
 
 import com.baidu.disconf.client.common.model.DisConfCommonModel;
-import com.baidu.disconf.core.common.remote.*;
-import io.netty.channel.ChannelHandlerContext;
+import com.baidu.disconf.core.common.remote.ConfigChangeRequest;
+import com.baidu.disconf.core.common.remote.HeartBeatRequest;
+import com.baidu.disconf.core.common.remote.Message;
+import com.baidu.disconf.core.common.remote.ResponseHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,19 +28,15 @@ public class NettyChannelExchanger {
 
     private static int heartbeat = 10000;
 
-    private static NettyClient client;
+    private NettyClient client;
 
-    private static MessageHandler messageHandler;
-
-
-    public static void connect(String serverIp, int serverPort, MessageHandler messageHandler1, ResponseHandler responseHandler) {
-        messageHandler = messageHandler1;
+    public NettyChannelExchanger(String serverIp, int serverPort, ResponseHandler responseHandler) {
         client = new NettyClient(serverIp, serverPort);
         ResponseHandlerRegistry.registry(responseHandler);
         scheduled.scheduleWithFixedDelay(new HeartBeatTask(), heartbeat, heartbeat, TimeUnit.MILLISECONDS);
     }
 
-    public static void executeConfigListen(String fileName, DisConfCommonModel disConfCommonModel) {
+    public void executeConfigListen(String fileName, DisConfCommonModel disConfCommonModel) {
 
         ConfigChangeRequest configChangeRequest = new ConfigChangeRequest();
         configChangeRequest.setAppName(disConfCommonModel.getApp());
@@ -54,11 +52,8 @@ public class NettyChannelExchanger {
 
     }
 
-    public static void handler(ChannelHandlerContext ctx, Object msg) {
-        messageHandler.handler(ctx, msg);
-    }
 
-    static class HeartBeatTask implements Runnable {
+    class HeartBeatTask implements Runnable {
 
         @Override
         public void run() {

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.baidu.disconf.client.watch.inner.LeconfContextRefresher;
+import com.baidu.disconf.client.watch.inner.DisconfContextRefresher;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -87,7 +87,7 @@ public class DisconfMgrBean implements BeanDefinitionRegistryPostProcessor, Prio
 
     private void registryContextRefresher(BeanDefinitionRegistry registry) {
         GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-        beanDefinition.setBeanClass(LeconfContextRefresher.class);
+        beanDefinition.setBeanClass(DisconfContextRefresher.class);
         beanDefinition.setLazyInit(false);
         beanDefinition.setAbstract(false);
         beanDefinition.setAutowireCandidate(true);

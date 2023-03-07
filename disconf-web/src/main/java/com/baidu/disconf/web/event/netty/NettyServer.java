@@ -37,15 +37,14 @@ public class NettyServer {
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
 
-    int DEFAULT_IO_THREADS = Math.min(Runtime.getRuntime().availableProcessors() + 1, 32);
-
     @PostConstruct
     public void start() {
 
         ServerBootstrap bootstrap = new ServerBootstrap();
-
+        // 主线程，不处理任何业务逻辑，只是接收客户的连接请求
         bossGroup = new NioEventLoopGroup(1);
-        workerGroup = new NioEventLoopGroup(Runtime.getRuntime().availableProcessors());
+        // ⼯作线程，线程数默认是：cpu*2
+        workerGroup = new NioEventLoopGroup();
 
         final NettyServerHandler nettyServerHandler = new NettyServerHandler(requestMessageHandler);
 

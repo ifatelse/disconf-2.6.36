@@ -7,7 +7,6 @@ import com.baidu.disconf.client.config.DisClientSysConfig;
 import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
 import com.baidu.disconf.client.watch.netty.ConfigChangeResponseHandler;
 import com.baidu.disconf.client.watch.netty.NettyChannelExchanger;
-import com.baidu.disconf.client.watch.netty.ResponseMessageHandler;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.json.ValueVo;
 import com.baidu.disconf.core.common.path.DisconfWebPathMgr;
@@ -29,9 +28,9 @@ import java.util.concurrent.TimeUnit;
  * @Version : 1.0
  * @Copyright : Copyright (c) 2022 All Rights Reserved
  **/
-public class LeconfContextRefresher implements ApplicationListener<ContextRefreshedEvent> {
+public class DisconfContextRefresher implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static final Logger logger = LoggerFactory.getLogger(LeconfContextRefresher.class);
+    private static final Logger logger = LoggerFactory.getLogger(DisconfContextRefresher.class);
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), DisconfThreadFactory.create("RemoteConfigLongPollService", true));
 
@@ -48,8 +47,8 @@ public class LeconfContextRefresher implements ApplicationListener<ContextRefres
             if (Objects.equals(type, Constants.LISTEN_TYPE_HTTP)) {
                 executorService.execute(new LongPollingRunnable(DisClientConfig.getInstance().APP, configRepository));
             } else {
-                NettyChannelExchanger.connect("127.0.0.1", Constants.NETTY_PORT, new ResponseMessageHandler(), new ConfigChangeResponseHandler());
-                NettyChannelExchanger.executeConfigListen(DisClientConfig.getInstance().APP, configRepository.disConfCommonModel);
+                NettyChannelExchanger nettyChannelExchanger = new NettyChannelExchanger("127.0.0.1", Constants.NETTY_PORT, new ConfigChangeResponseHandler());
+                nettyChannelExchanger.executeConfigListen(DisClientConfig.getInstance().APP, configRepository.disConfCommonModel);
             }
         }
     }
