@@ -34,10 +34,10 @@ public class DisconfContextRefresher implements ApplicationListener<ContextRefre
 
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), DisconfThreadFactory.create("RemoteConfigLongPollService", true));
 
-    String type = System.getProperty("listen_type", "http");
-
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+
+        String type = contextRefreshedEvent.getApplicationContext().getEnvironment().getProperty("listen.type", "http");
 
         RemoteConfigRepository configRepository = DisConfConfigService.getInstance().getConfigRepository();
         if (configRepository != null) {
