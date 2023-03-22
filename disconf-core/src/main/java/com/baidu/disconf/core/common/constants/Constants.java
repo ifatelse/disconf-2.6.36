@@ -31,9 +31,11 @@ public class Constants {
     public final static String CON_STRING = "+";
 
     public final static String LISTEN_TYPE_HTTP = "http";
-    public final static String LISTEN_TYPE_TCP = "tcp";
+    public final static String LISTEN_TYPE_NETTY = "netty";
+    public final static String LISTEN_TYPE_GRPC = "grpc";
 
     public final static Integer NETTY_PORT = 8888;
+    public final static Integer GRPC_PORT = 9999;
 
 
     /**

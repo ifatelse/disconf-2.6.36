@@ -1,4 +1,4 @@
-package com.baidu.disconf.core.common.remote;
+package com.baidu.disconf.core.common.remote.netty;
 
 import java.io.Serializable;
 

@@ -135,7 +135,6 @@ public class ConfigNotifyController extends AbstractEventListener {
         @Override
         public void run() {
             List<DeferredResultWrapper> deferredResultList = Lists.newArrayList(deferredResults.get(confKey));
-            logger.info("change notify:{}", deferredResultList.size());
             for (DeferredResultWrapper wrapper : deferredResultList) {
                 ValueVo valueVo = new ValueVo();
                 valueVo.setStatus(Constants.CONFIG_CHANGE);

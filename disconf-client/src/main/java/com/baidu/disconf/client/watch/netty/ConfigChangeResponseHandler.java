@@ -5,7 +5,7 @@ import com.baidu.disconf.client.core.processor.DisconfCoreProcessor;
 import com.baidu.disconf.client.watch.inner.DisConfConfigService;
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.remote.ConfigChangeResponse;
-import com.baidu.disconf.core.common.remote.ResponseHandler;
+import com.baidu.disconf.core.common.remote.netty.ResponseHandler;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

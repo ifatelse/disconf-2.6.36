@@ -1,8 +1,8 @@
 package com.baidu.disconf.client.watch.netty;
 
-import com.baidu.disconf.core.common.remote.Message;
+import com.baidu.disconf.core.common.remote.netty.Message;
 import com.baidu.disconf.core.common.remote.Response;
-import com.baidu.disconf.core.common.remote.ResponseHandler;
+import com.baidu.disconf.core.common.remote.netty.ResponseHandler;
 import com.baidu.disconf.core.common.utils.GsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 

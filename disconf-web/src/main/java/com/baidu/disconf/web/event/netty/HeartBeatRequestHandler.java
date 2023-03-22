@@ -1,7 +1,7 @@
 package com.baidu.disconf.web.event.netty;
 
 import com.baidu.disconf.core.common.remote.HeartBeatRequest;
-import com.baidu.disconf.core.common.remote.RequestHandler;
+import com.baidu.disconf.core.common.remote.netty.RequestHandler;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Component;
 

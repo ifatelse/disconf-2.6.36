@@ -1,6 +1,6 @@
 package com.baidu.disconf.client.watch.netty;
 
-import com.baidu.disconf.core.common.remote.ResponseHandler;
+import com.baidu.disconf.core.common.remote.netty.ResponseHandler;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;

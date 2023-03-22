@@ -1,8 +1,8 @@
 package com.baidu.disconf.web.event.netty;
 
-import com.baidu.disconf.core.common.remote.Message;
+import com.baidu.disconf.core.common.remote.netty.Message;
 import com.baidu.disconf.core.common.remote.Request;
-import com.baidu.disconf.core.common.remote.RequestHandler;
+import com.baidu.disconf.core.common.remote.netty.RequestHandler;
 import com.baidu.disconf.core.common.utils.GsonUtils;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.beans.factory.annotation.Autowired;

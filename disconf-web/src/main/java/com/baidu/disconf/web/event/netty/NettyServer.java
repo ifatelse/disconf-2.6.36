@@ -1,7 +1,7 @@
 package com.baidu.disconf.web.event.netty;
 
 import com.baidu.disconf.core.common.constants.Constants;
-import com.baidu.disconf.core.common.remote.MessageCodec;
+import com.baidu.disconf.core.common.remote.netty.MessageCodec;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;

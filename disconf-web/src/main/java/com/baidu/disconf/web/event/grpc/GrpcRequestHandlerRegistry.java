@@ -1,6 +1,6 @@
-package com.baidu.disconf.web.event.netty;
+package com.baidu.disconf.web.event.grpc;
 
-import com.baidu.disconf.core.common.remote.netty.RequestHandler;
+import com.baidu.disconf.core.common.remote.grpc.GrpcRequestHandler;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
@@ -13,27 +13,27 @@ import java.util.Map;
 /**
  * @Description :
  * @Author : Lethe
- * @Date : 2023/2/14 16:04
+ * @Date : 2023/3/13 13:37
  * @Version : 1.0
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
 @Component
-public class RequestHandlerRegistry implements ApplicationListener<ContextRefreshedEvent> {
+public class GrpcRequestHandlerRegistry implements ApplicationListener<ContextRefreshedEvent> {
 
-    private static final Map<String, RequestHandler<?>> REGISTRY_HANDLERS = new HashMap<>();
-
-    private static final Map<String, Class<?>> REGISTRY_REQUEST = new HashMap<>();
+    private final Map<String, GrpcRequestHandler> registryHandlers = new HashMap<>();
+    private final Map<String, Class<?>> REGISTRY_REQUEST = new HashMap<>();
 
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        Map<String, RequestHandler> beansOfType = event.getApplicationContext().getBeansOfType(RequestHandler.class);
-        Collection<RequestHandler> values = beansOfType.values();
-        for (RequestHandler<?> requestHandler : values) {
+
+        Map<String, GrpcRequestHandler> beansOfType = event.getApplicationContext().getBeansOfType(GrpcRequestHandler.class);
+        Collection<GrpcRequestHandler> values = beansOfType.values();
+        for (GrpcRequestHandler requestHandler : values) {
 
             Class<?> clazz = requestHandler.getClass();
             boolean skip = false;
-            while (!clazz.getSuperclass().equals(RequestHandler.class)) {
+            while (!clazz.getSuperclass().equals(GrpcRequestHandler.class)) {
                 if (clazz.getSuperclass().equals(Object.class)) {
                     skip = true;
                     break;
@@ -45,17 +45,13 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
             }
 
             Class<?> tClass = (Class<?>) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
-
-            REGISTRY_HANDLERS.putIfAbsent(tClass.getSimpleName(), requestHandler);
-
+            registryHandlers.putIfAbsent(tClass.getSimpleName(), requestHandler);
             REGISTRY_REQUEST.put(tClass.getSimpleName(), tClass);
-
         }
     }
 
-
-    public RequestHandler<?> getByRequestType(String requestType) {
-        return REGISTRY_HANDLERS.get(requestType);
+    public GrpcRequestHandler getByRequestType(String requestType) {
+        return registryHandlers.get(requestType);
     }
 
     public Class<?> getByRequestClassType(String requestType) {

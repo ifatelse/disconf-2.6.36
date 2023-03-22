@@ -1,4 +1,4 @@
-package com.baidu.disconf.core.common.remote;
+package com.baidu.disconf.core.common.remote.netty;
 
 import com.baidu.disconf.core.common.utils.GsonUtils;
 import io.netty.buffer.ByteBuf;

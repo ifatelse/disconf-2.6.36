@@ -1,6 +1,6 @@
 package com.baidu.disconf.client.watch.netty;
 
-import com.baidu.disconf.core.common.remote.MessageCodec;
+import com.baidu.disconf.core.common.remote.netty.MessageCodec;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.*;

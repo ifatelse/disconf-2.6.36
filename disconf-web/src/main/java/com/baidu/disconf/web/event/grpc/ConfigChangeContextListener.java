@@ -1,13 +1,14 @@
-package com.baidu.disconf.web.event.netty;
+package com.baidu.disconf.web.event.grpc;
 
 import com.baidu.disconf.core.common.constants.Constants;
 import com.baidu.disconf.core.common.remote.ConfigChangeResponse;
-import com.baidu.disconf.core.common.remote.netty.Message;
 import com.baidu.disconf.core.common.utils.DisconfThreadFactory;
+import com.baidu.disconf.core.common.utils.GrpcUtils;
+import com.baidu.disconf.core.grpc.auto.Message;
 import com.baidu.disconf.web.event.AbstractEventListener;
 import com.baidu.disconf.web.event.ConfigChangeEvent;
 import com.baidu.disconf.web.event.Event;
-import io.netty.channel.ChannelHandlerContext;
+import io.grpc.stub.StreamObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,9 @@ import java.util.concurrent.Executors;
  * @Copyright : Copyright (c) 2023 All Rights Reserved
  **/
 @Component
-public class ConfigChangeListener extends AbstractEventListener {
+public class ConfigChangeContextListener extends AbstractEventListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigChangeListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigChangeContextListener.class);
 
     ExecutorService notifyExecutorService = Executors.newSingleThreadExecutor(DisconfThreadFactory.create("ConfigChangeListener", true));
 
@@ -46,7 +47,7 @@ public class ConfigChangeListener extends AbstractEventListener {
             ConfigChangeEvent evt = (ConfigChangeEvent) event;
             String confName = evt.confName;
             String confKey = evt.confKey;
-            if (!NettyChannelService.watchCtxIsEmpty()) {
+            if (!ConfigChangeContext.observerIsEmpty()) {
                 logger.info("change confName:{}, confKey:{}", confName, confKey);
                 notifyExecutorService.execute(new ConfigChangeTask(confName, confKey));
             }
@@ -66,15 +67,16 @@ public class ConfigChangeListener extends AbstractEventListener {
 
         @Override
         public void run() {
-            Collection<ChannelHandlerContext> contextList = NettyChannelService.getWatchCtxList(confKey);
-            for (ChannelHandlerContext ctx : contextList) {
-                ConfigChangeResponse configChangeResponse = new ConfigChangeResponse();
-                configChangeResponse.setStatus(Constants.CONFIG_CHANGE);
-                configChangeResponse.setFileName(confName);
-                Message message = new Message();
-                message.setMsgType(ConfigChangeResponse.class.getSimpleName());
-                message.setData(configChangeResponse);
-                ctx.channel().writeAndFlush(message);
+            Collection<String> connectionIdList = ConfigChangeContext.getWatchCtxList(confKey);
+            for (String connectionId : connectionIdList) {
+                StreamObserver<Message> streamObserver = ConfigChangeContext.getStreamObserver(connectionId);
+                if (streamObserver != null) {
+                    ConfigChangeResponse configChangeResponse = new ConfigChangeResponse();
+                    configChangeResponse.setStatus(Constants.CONFIG_CHANGE);
+                    configChangeResponse.setFileName(confName);
+                    Message message = GrpcUtils.convert(configChangeResponse);
+                    streamObserver.onNext(message);
+                }
             }
         }
     }
